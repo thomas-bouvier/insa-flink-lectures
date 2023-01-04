@@ -1,0 +1,6 @@
+1,Julia,1
+2,Daniel,7
+3,Justine,2
+4,Luiz,6
+5,Alex,4
+6,Thomas,2
