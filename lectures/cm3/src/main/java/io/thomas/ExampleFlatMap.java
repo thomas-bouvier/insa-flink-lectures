@@ -7,8 +7,12 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleFlatMap" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleFlatMap" -Dexec.args="--input countries-stream.txt" -q
+ */
 public class ExampleFlatMap {
-	
+
 	public static final String[] WORDS = new String[] {
 			"Asia	China, Japan, Malaysia, Nepal, Singapore",
 			"Europe	Austria, Belgium, France, Greece, Spain, Romania",
@@ -36,7 +40,7 @@ public class ExampleFlatMap {
 			// read the text file from given input path
 			dataStream = env.readTextFile(params.get("input"));
 		} else {
-			System.out.println("Executing WordCount example with default input data set.");
+			System.out.println("Executing FlatMap example with default input data set.");
 			System.out.println("Use --input to specify file input.");
 			// get default test text data
 			dataStream = env.fromElements(WORDS);
@@ -54,7 +58,7 @@ public class ExampleFlatMap {
 		}
 
 		// execute program
-		env.execute("Streaming WordCount");
+		env.execute("ExampleFlatMap");
 	}
 
 	// *************************************************************************

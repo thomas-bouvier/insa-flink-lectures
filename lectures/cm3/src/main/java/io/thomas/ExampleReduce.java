@@ -8,6 +8,9 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleReduce" -q
+ */
 public class ExampleReduce {
 	
 	public static final String[] WORDS = new String[] {
@@ -43,7 +46,7 @@ public class ExampleReduce {
 			// read the text file from given input path
 			dataStream = env.readTextFile(params.get("input"));
 		} else {
-			System.out.println("Executing WordCount example with default input data set.");
+			System.out.println("Executing Reduce example with default input data set.");
 			System.out.println("Use --input to specify file input.");
 			// get default test text data
 			dataStream = env.fromElements(WORDS);
@@ -63,7 +66,7 @@ public class ExampleReduce {
 		}
 
 		// execute program
-		env.execute("Streaming WordCount");
+		env.execute("Streaming ExampleReduce");
 	}
 
 	// *************************************************************************
@@ -98,7 +101,7 @@ public class ExampleReduce {
 	public static class AvgPopulation implements MapFunction<Tuple3<String, Double, Integer>, Tuple2<String, Double>> {
 		@Override
 		public Tuple2<String, Double> map(Tuple3<String, Double, Integer> value) throws Exception {
-			return new Tuple2<String, Double>(
+			return new Tuple2<>(
 					value.f0, /* continent */
 					value.f1 / value.f2 /* avg population = population sum / count */
 			);

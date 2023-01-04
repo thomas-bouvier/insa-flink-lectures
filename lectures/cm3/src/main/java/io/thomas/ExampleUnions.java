@@ -2,13 +2,15 @@ package io.thomas;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.DataSet;
-import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleUnions" -Dexec.args="--input1 countries-stream.txt --input2 countries-stream-v2.txt" -q
+ */
 public class ExampleUnions {
-	
 
 	public static void main(String[] args) throws Exception {
 
@@ -16,22 +18,17 @@ public class ExampleUnions {
 		final ParameterTool params = ParameterTool.fromArgs(args);
 
 		// set up the execution environment
-		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
 		// make parameters available in the web interface
 		env.getConfig().setGlobalJobParameters(params);
 
 		// get input data
-		DataSet<String> dataset1 = env.readTextFile(params.get("input1"));
-		DataSet<String> dataset2 = env.readTextFile(params.get("input2"));
+		DataStream<String> stream1 = env.readTextFile(params.get("input1"));
+		DataStream<String> stream2 = env.readTextFile(params.get("input2"));
 		
-		DataSet<String> countries1 = dataset1.map(new ExtractCountries())
-										       .flatMap(new SplitCountries());
-
-		DataSet<String> countries2 = dataset2.map(new ExtractCountries())
-			       							   .flatMap(new SplitCountries());
-		
-		DataSet<String> countriesUnion = countries1.union(countries2);
+		DataStream<String> countriesUnion = stream1.union(stream2).map(new ExtractCountries())
+										       					  .flatMap(new SplitCountries());
 
 		
 		// emit result
@@ -43,7 +40,7 @@ public class ExampleUnions {
 		}
 
 		// execute program
-		env.execute("Streaming WordCount");
+		env.execute("Streaming ExampleUnions");
 	}
 
 	// *************************************************************************

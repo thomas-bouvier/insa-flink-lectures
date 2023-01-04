@@ -9,6 +9,9 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleMap" -q
+*/
 public class ExampleMap {
 	
 	public static final String[] WORDS = new String[] {
@@ -33,7 +36,7 @@ public class ExampleMap {
 			// read the text file from given input path
 			dataStream = env.readTextFile(params.get("input"));
 		} else {
-			System.out.println("Executing WordCount example with default input data set.");
+			System.out.println("Executing Map example with default input data set.");
 			System.out.println("Use --input to specify file input.");
 			// get default test text data
 			dataStream = env.fromElements(WORDS);
@@ -51,7 +54,7 @@ public class ExampleMap {
 		}
 
 		// execute program
-		env.execute("Streaming WordCount");
+		env.execute("Streaming ExampleMap");
 	}
 
 	// *************************************************************************
@@ -61,14 +64,14 @@ public class ExampleMap {
 	public static class RemoveShortWords implements FilterFunction<String> {
 		@Override
 		public boolean filter(String word) throws Exception {
-			return word.length()>3;
+			return word.length() > 3;
 		}
 	}
 	
 	public static class UpperWord implements MapFunction<String, String> {
 		@Override
 		public String map(String word) throws Exception {
-			if(word.trim().length()>5){
+			if(word.trim().length() > 5){
 				return word.toUpperCase();
 			} else {
 				return word;

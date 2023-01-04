@@ -6,9 +6,12 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import utils.ContinentAvg;
-import utils.ContinentStats;
+import io.thomas.utils.ContinentAvg;
+import io.thomas.utils.ContinentStats;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleReducePojo" -q
+ */
 public class ExampleReducePojo {
 	
 	public static final String[] WORDS = new String[] {
@@ -63,7 +66,7 @@ public class ExampleReducePojo {
 		}
 
 		// execute program
-		env.execute("Streaming WordCount");
+		env.execute("Streaming ExampleReducePojo");
 	}
 
 	// *************************************************************************

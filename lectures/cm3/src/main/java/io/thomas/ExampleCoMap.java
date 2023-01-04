@@ -6,6 +6,9 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.CoMapFunction;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleCoMap" -Dexec.args="--input1 countries-stream.txt --input2 countries-stream-v2.txt" -q
+ */
 public class ExampleCoMap {
 	
 
@@ -35,7 +38,7 @@ public class ExampleCoMap {
 		}
 
 		// execute program
-		env.execute("Streaming WordCount");
+		env.execute("Streaming ExampleCoMap");
 	}
 
 	// *************************************************************************

@@ -8,6 +8,10 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleFilter" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleFilter" -Dexec.args="--input word-stream.txt" -q
+ */
 public class ExampleFilter {
 	
 	public static final String[] WORDS = new String[] {
@@ -32,7 +36,7 @@ public class ExampleFilter {
 			// read the text file from given input path
 			dataStream = env.readTextFile(params.get("input"));
 		} else {
-			System.out.println("Executing WordCount example with default input data set.");
+			System.out.println("Executing Filter example with default input data set.");
 			System.out.println("Use --input to specify file input.");
 			// get default test text data
 			dataStream = env.fromElements(WORDS);
@@ -49,7 +53,7 @@ public class ExampleFilter {
 		}
 
 		// execute program
-		env.execute("Streaming WordCount");
+		env.execute("Streaming ExampleFilter");
 	}
 
 	// *************************************************************************
@@ -59,7 +63,7 @@ public class ExampleFilter {
 	public static class RemoveShortWords implements FilterFunction<String> {
 		@Override
 		public boolean filter(String word) throws Exception {
-			return word.length()>3;
+			return word.length() > 3;
 		}
 	}
 
