@@ -1,0 +1,12 @@
+This
+is
+a
+simple
+example
+that
+shows
+how
+filter
+works
+in
+Flink

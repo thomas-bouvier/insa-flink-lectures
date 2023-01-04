@@ -1,0 +1,6 @@
+Asia	China, Japan, Malaysia, Nepal, Singapore
+Europe	Austria, Belgium, France, Greece, Spain, Romania
+North America	Canada, Cuba, US, Mexico
+South America	Argentina, Brazil, Chile, Venezuela, Uruguay
+Oceania	Australia, Fiji, New Zealand, Tonga
+Africa	Angola, Egypt, Kenya, Morocco
