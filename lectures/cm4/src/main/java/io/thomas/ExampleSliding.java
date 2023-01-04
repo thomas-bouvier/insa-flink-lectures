@@ -9,6 +9,11 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.producers.DataProducer" -q
+ * or nc -lk 9090
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleSliding" -q
+ */
 public class ExampleSliding {
 	
 	public static void main(String[] args) throws Exception {
@@ -30,7 +35,7 @@ public class ExampleSliding {
 																	 .reduce(new SumTemperature());
 
 		// emit result
-		outputStream.writeAsText("example-sliding.txt");
+		outputStream.print();
 		// execute program
 		env.execute("Streaming ExampleSliding");
 	}
@@ -42,8 +47,8 @@ public class ExampleSliding {
 	public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
 		@Override
 		public Tuple2<Integer, Double> map(String value) throws Exception {
-			return Tuple2.of(Integer.parseInt(value.split("  ")[0].trim()), 
-							 Double.parseDouble(value.split("  ")[1].trim()));
+			return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
+							 Double.parseDouble(value.split(" ")[2].trim()));
 		}
 	}
 	

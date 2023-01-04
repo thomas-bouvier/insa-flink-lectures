@@ -14,6 +14,10 @@ import org.apache.flink.streaming.api.windowing.triggers.CountTrigger;
 import io.thomas.ExampleSession.FormatData;
 import io.thomas.ExampleSession.SumTemperature;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.producers.DataProducerInactivity" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleGlobal" -q
+ */
 public class ExampleGlobal {
 	
 	public static void main(String[] args) throws Exception {
@@ -35,7 +39,7 @@ public class ExampleGlobal {
 		
 
 		// emit result
-		outputStream.writeAsText("example-global.txt");
+		outputStream.print();
 		// execute program
 		env.execute("Streaming ExampleGlobal");
 	}
@@ -47,8 +51,8 @@ public class ExampleGlobal {
 	public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
 		@Override
 		public Tuple2<Integer, Double> map(String value) throws Exception {
-			return Tuple2.of(Integer.parseInt(value.split("  ")[0].trim()), 
-							 Double.parseDouble(value.split("  ")[1].trim()));
+			return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
+							 Double.parseDouble(value.split(" ")[2].trim()));
 		}
 	}
 	

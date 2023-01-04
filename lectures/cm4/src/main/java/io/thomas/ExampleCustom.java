@@ -28,7 +28,7 @@ public class ExampleCustom {
 																					  .apply(new MyWindowFunction());
 
 		// emit result
-		outputStream.writeAsText("example-custom.txt");
+		outputStream.print();
 		// execute program
 		env.execute("Streaming ExampleCustom");
 	}
@@ -40,8 +40,8 @@ public class ExampleCustom {
 	public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
 		@Override
 		public Tuple2<Integer, Double> map(String value) throws Exception {
-			return Tuple2.of(Integer.parseInt(value.split("  ")[0].trim()), 
-							 Double.parseDouble(value.split("  ")[1].trim()));
+			return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
+							 Double.parseDouble(value.split(" ")[1].trim()));
 		}
 	}
 	

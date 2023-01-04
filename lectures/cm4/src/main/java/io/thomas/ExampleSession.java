@@ -9,6 +9,10 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.ProcessingTimeSessionWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.producers.DataProducerInactivity" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleSession" -q
+ */
 public class ExampleSession {
 	
 	public static void main(String[] args) throws Exception {
@@ -28,7 +32,7 @@ public class ExampleSession {
 																	 .sum(1);
 
 		// emit result
-		outputStream.writeAsText("example-session.txt");
+		outputStream.print();
 		// execute program
 		env.execute("Streaming ExampleSession");
 	}
@@ -40,8 +44,8 @@ public class ExampleSession {
 	public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
 		@Override
 		public Tuple2<Integer, Double> map(String value) throws Exception {
-			return Tuple2.of(Integer.parseInt(value.split("  ")[0].trim()), 
-							 Double.parseDouble(value.split("  ")[1].trim()));
+			return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
+							 Double.parseDouble(value.split(" ")[2].trim()));
 		}
 	}
 	
