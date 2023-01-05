@@ -24,6 +24,15 @@ Default locale: en_GB, platform encoding: UTF-8
 OS name: "linux", version: "6.0.16-200.fc36.x86_64", arch: "amd64", family: "unix"
 ```
 
+If you get any issue, [SDKMAN](https://sdkman.io/usage) is useful to manage your environment.
+
+```
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install java 11.0.8-open
+sdk install maven
+```
+
 # Execute an example
 
 ```
