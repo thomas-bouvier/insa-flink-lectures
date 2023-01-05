@@ -20,7 +20,7 @@ public class DataProducer
                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                     String measurement;
                     while ((measurement = br.readLine()) != null){
-                    	System.out.println(measurement);
+                        System.out.println(measurement);
                         out.println(measurement);
                         Thread.sleep(1000);
                     }

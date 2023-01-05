@@ -14,51 +14,51 @@ import org.apache.flink.streaming.api.windowing.time.Time;
  * mvn install exec:java -Dmain.class="io.thomas.ExampleSession" -q
  */
 public class ExampleSession {
-	
-	public static void main(String[] args) throws Exception {
+    
+    public static void main(String[] args) throws Exception {
 
-		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
-		
-		DataStream<String> dataStream = env.socketTextStream("localhost", 9090);
-		
-//		DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-//																	 .windowAll(ProcessingTimeSessionWindows.withGap(Time.seconds(2)))
-//																	 .reduce(new SumTemperature());
-		
-		DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-																	 .keyBy(0)
-																	 .window(ProcessingTimeSessionWindows.withGap(Time.seconds(2)))
-																	 .sum(1);
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+        
+        DataStream<String> dataStream = env.socketTextStream("localhost", 9090);
+        
+//        DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
+//                                                                     .windowAll(ProcessingTimeSessionWindows.withGap(Time.seconds(2)))
+//                                                                     .reduce(new SumTemperature());
+        
+        DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
+                                                                     .keyBy(0)
+                                                                     .window(ProcessingTimeSessionWindows.withGap(Time.seconds(2)))
+                                                                     .sum(1);
 
-		// emit result
-		outputStream.print();
-		// execute program
-		env.execute("Streaming ExampleSession");
-	}
+        // emit result
+        outputStream.print();
+        // execute program
+        env.execute("Streaming ExampleSession");
+    }
 
-	// *************************************************************************
-	// USER FUNCTIONS
-	// *************************************************************************
-	
-	public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
-		@Override
-		public Tuple2<Integer, Double> map(String value) throws Exception {
-			return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
-							 Double.parseDouble(value.split(" ")[2].trim()));
-		}
-	}
-	
-	public static class SumTemperature implements ReduceFunction<Tuple2<Integer, Double>> {
-		@Override
-		public Tuple2<Integer, Double> reduce(
-				Tuple2<Integer, Double> mycumulative,
-				Tuple2<Integer, Double> input) throws Exception {
-			return new Tuple2<Integer, Double>(
-						input.f0, /* id */
-						mycumulative.f1 + input.f1 /* temperature */
-			);
-		}
-	}
-	
+    // *************************************************************************
+    // USER FUNCTIONS
+    // *************************************************************************
+    
+    public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
+        @Override
+        public Tuple2<Integer, Double> map(String value) throws Exception {
+            return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
+                             Double.parseDouble(value.split(" ")[2].trim()));
+        }
+    }
+    
+    public static class SumTemperature implements ReduceFunction<Tuple2<Integer, Double>> {
+        @Override
+        public Tuple2<Integer, Double> reduce(
+                Tuple2<Integer, Double> mycumulative,
+                Tuple2<Integer, Double> input) throws Exception {
+            return new Tuple2<Integer, Double>(
+                        input.f0, /* id */
+                        mycumulative.f1 + input.f1 /* temperature */
+            );
+        }
+    }
+    
 }

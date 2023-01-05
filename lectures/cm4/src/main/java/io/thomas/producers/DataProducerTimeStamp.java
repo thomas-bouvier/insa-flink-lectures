@@ -20,10 +20,10 @@ public class DataProducerTimeStamp
                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                     String measurement;
                     while ((measurement = br.readLine()) != null){
-                    	measurement += "  "+System.currentTimeMillis();                    	
-                    	System.out.println(measurement);
+                        measurement += "  "+System.currentTimeMillis();                        
+                        System.out.println(measurement);
                         out.println(measurement);
-                       	Thread.sleep(1000);
+                           Thread.sleep(1000);
                     }
                 } finally{
                     socket.close();

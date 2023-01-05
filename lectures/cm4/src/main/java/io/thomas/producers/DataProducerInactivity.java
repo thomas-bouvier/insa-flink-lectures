@@ -21,16 +21,16 @@ public class DataProducerInactivity
                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                     String measurement;
                     while ((measurement = br.readLine()) != null){
-                    	eventsSent++;
-                    	System.out.println(measurement);
+                        eventsSent++;
+                        System.out.println(measurement);
                         out.println(measurement);
                         
                         if (eventsSent>=4) {
-                        	eventsSent = 0;
-                        	System.out.println("--------------------");
-                        	Thread.sleep(3000);                        	
+                            eventsSent = 0;
+                            System.out.println("--------------------");
+                            Thread.sleep(3000);                            
                         } else
-                        	Thread.sleep(1000);
+                            Thread.sleep(1000);
                     }
                 } finally{
                     socket.close();

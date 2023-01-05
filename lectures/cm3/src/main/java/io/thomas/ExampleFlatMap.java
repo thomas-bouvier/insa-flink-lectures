@@ -13,74 +13,74 @@ import org.apache.flink.util.Collector;
  */
 public class ExampleFlatMap {
 
-	public static final String[] WORDS = new String[] {
-			"Asia	China, Japan, Malaysia, Nepal, Singapore",
-			"Europe	Austria, Belgium, France, Greece, Spain, Romania",
-			"North America	Canada, Cuba, US, Mexico",
-			"South America	Argentina, Brazil, Chile, Venezuela, Uruguay",
-			"Oceania	Australia, Fiji, New Zealand, Tonga",
-			"Africa	Angola, Egypt, Kenya, Morocco"
-	};
+    public static final String[] WORDS = new String[] {
+            "Asia    China, Japan, Malaysia, Nepal, Singapore",
+            "Europe    Austria, Belgium, France, Greece, Spain, Romania",
+            "North America    Canada, Cuba, US, Mexico",
+            "South America    Argentina, Brazil, Chile, Venezuela, Uruguay",
+            "Oceania    Australia, Fiji, New Zealand, Tonga",
+            "Africa    Angola, Egypt, Kenya, Morocco"
+    };
 
 
-	public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
 
-		// Checking input parameters
-		final ParameterTool params = ParameterTool.fromArgs(args);
+        // Checking input parameters
+        final ParameterTool params = ParameterTool.fromArgs(args);
 
-		// set up the execution environment
-		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // set up the execution environment
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-		// make parameters available in the web interface
-		env.getConfig().setGlobalJobParameters(params);
+        // make parameters available in the web interface
+        env.getConfig().setGlobalJobParameters(params);
 
-		// get input data
-		DataStream<String> dataStream;
-		if (params.has("input")) {
-			// read the text file from given input path
-			dataStream = env.readTextFile(params.get("input"));
-		} else {
-			System.out.println("Executing FlatMap example with default input data set.");
-			System.out.println("Use --input to specify file input.");
-			// get default test text data
-			dataStream = env.fromElements(WORDS);
-		}
+        // get input data
+        DataStream<String> dataStream;
+        if (params.has("input")) {
+            // read the text file from given input path
+            dataStream = env.readTextFile(params.get("input"));
+        } else {
+            System.out.println("Executing FlatMap example with default input data set.");
+            System.out.println("Use --input to specify file input.");
+            // get default test text data
+            dataStream = env.fromElements(WORDS);
+        }
 
-		DataStream<String> outputStream = dataStream.map(new ExtractCountries())
-													.flatMap(new SplitCountries());
+        DataStream<String> outputStream = dataStream.map(new ExtractCountries())
+                                                    .flatMap(new SplitCountries());
 
-		// emit result
-		if (params.has("output")) {
-			outputStream.writeAsText(params.get("output"));
-		} else {
-			System.out.println("Printing result to stdout. Use --output to specify output path.");
-			outputStream.print();
-		}
+        // emit result
+        if (params.has("output")) {
+            outputStream.writeAsText(params.get("output"));
+        } else {
+            System.out.println("Printing result to stdout. Use --output to specify output path.");
+            outputStream.print();
+        }
 
-		// execute program
-		env.execute("ExampleFlatMap");
-	}
+        // execute program
+        env.execute("ExampleFlatMap");
+    }
 
-	// *************************************************************************
-	// USER FUNCTIONS
-	// *************************************************************************
+    // *************************************************************************
+    // USER FUNCTIONS
+    // *************************************************************************
 
-	
-	public static class ExtractCountries implements MapFunction<String, String> {
-		@Override
-		public String map(String continent) throws Exception {
-			return continent.split("\t")[1];
-		}
-	}
-	
-	public static class SplitCountries implements FlatMapFunction<String, String> {
-		@Override
-		public void flatMap(String input, Collector<String> out) throws Exception {
-			String[] countries = input.split(",");
-			for (String country : countries) {
-				out.collect(country.trim());
-			}
-		}
-	}
+    
+    public static class ExtractCountries implements MapFunction<String, String> {
+        @Override
+        public String map(String continent) throws Exception {
+            return continent.split("\t")[1];
+        }
+    }
+    
+    public static class SplitCountries implements FlatMapFunction<String, String> {
+        @Override
+        public void flatMap(String input, Collector<String> out) throws Exception {
+            String[] countries = input.split(",");
+            for (String country : countries) {
+                out.collect(country.trim());
+            }
+        }
+    }
 
 }
