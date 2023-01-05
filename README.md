@@ -58,3 +58,26 @@ mvn install exec:java -Dmain.class="io.thomas.ExampleJoin" -Dexec.args="--input1
 ```
 
 Please use absolute paths for input files.
+
+# Misc
+
+To write text data on a socket, which may be ingested by Flink:
+
+```
+nc -lk 9090
+```
+
+Check whether socket 9090 is open:
+
+```
+lsof -i -P -n | grep 9090
+```
+
+Flink related commands, formerly used by Daniel:
+
+```
+/home/student/tp/flink-1.9.0/bin/start-cluster.sh
+/home/student/tp/flink-1.9.0/bin/flink run /home/student/tp/eclipse-workspace/wc/target/wc-0.0.1-SNAPSHOT.jar --input file:///home/student/wc-in.txt --output file:///home/student/wc-out.txt
+/home/student/tp/flink-1.9.0/bin/flink run -c cm3.WordCountFilter /home/student/tp/eclipse-workspace/wc/target/wc-0.0.1-SNAPSHOT.jar --input file:///home/student/word-stream.txt --output file:///home/student/wc-out-filter.txt
+/home/student/tp/flink-1.9.0/bin/stop-cluster.sh
+```
