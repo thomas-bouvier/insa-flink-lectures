@@ -50,7 +50,7 @@ public class ExampleUnions {
     public static class ExtractCountries implements MapFunction<String, String> {
         @Override
         public String map(String continent) throws Exception {
-            return continent.split("\t")[1];
+            return continent.split(";")[1];
         }
     }
     

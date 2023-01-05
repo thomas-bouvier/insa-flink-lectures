@@ -12,18 +12,18 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class ExampleNumAgg {
     
     public static final String[] WORDS = new String[] {
-            "Europe    Belgium, 11539878, 0.147",
-            "Europe    France, 67146000, 0.858",
-            "Europe    Greece, 10724599, 0.137",
-            "Europe    Spain, 47329981, 0.605",
-            "Europe    Austria, 8935112, 0.114",
-            "Europe    Romania, 19317984, 0.247",
-            "Asia    China, 1405384280, 8.0",
-            "Asia    Japan, 125880000, 1.61",
-            "Asia    Malaysia, 32709470, 0.418",
-            "Europe    Spain, 47329981, 0.605",
-            "America    United States, 330674288, 4.22",
-            "America    Brazil, 212356116, 2.71"
+            "Europe;Belgium, 11539878, 0.147",
+            "Europe;France, 67146000, 0.858",
+            "Europe;Greece, 10724599, 0.137",
+            "Europe;Spain, 47329981, 0.605",
+            "Europe;Austria, 8935112, 0.114",
+            "Europe;Romania, 19317984, 0.247",
+            "Asia;China, 1405384280, 8.0",
+            "Asia;Japan, 125880000, 1.61",
+            "Asia;Malaysia, 32709470, 0.418",
+            "Europe;Spain, 47329981, 0.605",
+            "America;United States, 330674288, 4.22",
+            "America;Brazil, 212356116, 2.71"
     };
 
 
@@ -74,7 +74,7 @@ public class ExampleNumAgg {
     public static class ExtractPopulation implements MapFunction<String, Tuple2<String, Integer>> {
         @Override
         public Tuple2<String, Integer> map(String data) throws Exception {
-            String[] fields = data.split("\t");
+            String[] fields = data.split(";");
             return new Tuple2<String, Integer>(
                     fields[0].trim(), /* continent */
                     Integer.parseInt(fields[1].split(",")[1].trim())); /* population */

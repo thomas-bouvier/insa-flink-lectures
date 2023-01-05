@@ -14,12 +14,12 @@ import org.apache.flink.util.Collector;
 public class ExampleKeySum {
     
     public static final String[] WORDS = new String[] {
-            "Asia    Japan, Japan, Malaysia, Nepal, Singapore",
-            "Europe    Austria, Belgium, France, Greece, Spain, Romania",
-            "North America    Canada, Cuba, US, Mexico",
-            "South America    Argentina, Brazil, Chile, Venezuela, Uruguay",
-            "Oceania    Australia, Fiji, New Zealand, Tonga",
-            "Africa    Angola, Egypt, Kenya, Morocco"
+            "Asia;Japan, Japan, Malaysia, Nepal, Singapore",
+            "Europe;Austria, Belgium, France, Greece, Spain, Romania",
+            "North America;Canada, Cuba, US, Mexico",
+            "South America;Argentina, Brazil, Chile, Venezuela, Uruguay",
+            "Oceania;Australia, Fiji, New Zealand, Tonga",
+            "Africa;Angola, Egypt, Kenya, Morocco"
     };
 
 
@@ -71,7 +71,7 @@ public class ExampleKeySum {
     public static class ExtractCountries implements MapFunction<String, String> {
         @Override
         public String map(String continent) throws Exception {
-            return continent.split("\t")[1];
+            return continent.split(";")[1];
         }
     }
     

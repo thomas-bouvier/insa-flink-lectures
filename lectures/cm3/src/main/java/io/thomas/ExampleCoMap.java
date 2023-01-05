@@ -48,12 +48,12 @@ public class ExampleCoMap {
     public static class ExtractCountries implements CoMapFunction<String, String, Tuple2<String, String>> {
         @Override
         public Tuple2<String, String> map1(String value) throws Exception {
-            String[] data = value.split("\t");
+            String[] data = value.split(";");
             return Tuple2.of(data[0].trim(), data[1].trim());
         }
         @Override
         public Tuple2<String, String> map2(String value) throws Exception {
-            String[] data = value.split("\t");
+            String[] data = value.split(";");
             return Tuple2.of(data[0].trim(), data[1].trim());
         }
     }
