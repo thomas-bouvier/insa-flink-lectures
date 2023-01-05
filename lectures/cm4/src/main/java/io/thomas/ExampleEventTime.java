@@ -43,7 +43,8 @@ public class ExampleEventTime {
 	public static class FormatData implements MapFunction<String, Tuple3<Integer, Double, Long>> {
 		@Override
 		public Tuple3<Integer, Double, Long> map(String value) throws Exception {
-			return Tuple3.of(Integer.parseInt(value.split(" ")[0].trim()), 
+			// Forcing the key to be 0 for this example
+			return Tuple3.of(0, 
 							 Double.parseDouble(value.split(" ")[2].trim()),
 							 Long.parseLong(value.split("  ")[1].trim()));
 		}

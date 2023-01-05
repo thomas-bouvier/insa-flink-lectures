@@ -27,15 +27,15 @@ public class ExampleGlobal {
 		
 		DataStream<String> dataStream = env.socketTextStream("localhost", 9090);
 		
-//		DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-//																	 .windowAll(GlobalWindows.create()).trigger(CountTrigger.of(5))
-//																	 .reduce(new SumTemperature());
-		
-		
 		DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-																	 .keyBy(0)
-																	 .window(GlobalWindows.create()).trigger(CountTrigger.of(5))
+																	 .windowAll(GlobalWindows.create()).trigger(CountTrigger.of(5))
 																	 .reduce(new SumTemperature());
+		
+		
+		// DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
+		// 															 .keyBy(0)
+		// 															 .window(GlobalWindows.create()).trigger(CountTrigger.of(5))
+		// 															 .reduce(new SumTemperature());
 		
 
 		// emit result
@@ -61,7 +61,7 @@ public class ExampleGlobal {
 		public Tuple2<Integer, Double> reduce(
 				Tuple2<Integer, Double> mycumulative,
 				Tuple2<Integer, Double> input) throws Exception {
-			return new Tuple2<Integer, Double>(
+			return new Tuple2<>(
 						input.f0, /* id */
 						mycumulative.f1 + input.f1 /* temperature */
 			);

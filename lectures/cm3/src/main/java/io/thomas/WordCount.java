@@ -7,8 +7,11 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
+/**
+ * mvn install exec:java -Dmain.class="io.thomas.WordCount" -q
+ */
 public class WordCount {
-	
+
 	public static final String[] WORDS = new String[] {
 			"To be, or not to be,--that is the question:--",
 			"Whether 'tis nobler in the mind to suffer",
