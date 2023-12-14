@@ -42,14 +42,14 @@ public class ExampleIterate {
 
     public static class addIterateCounter implements MapFunction<Integer, Tuple2<Integer, Integer>> {
         @Override
-        public Tuple2<Integer, Integer> map(Integer value) throws Exception {
+        public Tuple2<Integer, Integer> map(Integer value) {
             return Tuple2.of(value, 0);
         }
     }
 
     public static class checkMultiple implements MapFunction<Tuple2<Integer, Integer>, Tuple2<Integer, Integer>> {
         @Override
-        public Tuple2<Integer, Integer> map(Tuple2<Integer, Integer> input) throws Exception {
+        public Tuple2<Integer, Integer> map(Tuple2<Integer, Integer> input) {
             Tuple2<Integer, Integer> output;
             if (input.f0 % 4 == 0)
                 output = input;
@@ -61,14 +61,14 @@ public class ExampleIterate {
 
     public static class MyFilterNotMultiple implements FilterFunction<Tuple2<Integer, Integer>> {
         @Override
-        public boolean filter(Tuple2<Integer, Integer> value) throws Exception {
+        public boolean filter(Tuple2<Integer, Integer> value) {
             return value.f0 % 4 != 0;
         }
     }
     
     public static class MyFilterMultiple implements FilterFunction<Tuple2<Integer, Integer>> {
         @Override
-        public boolean filter(Tuple2<Integer, Integer> value) throws Exception {
+        public boolean filter(Tuple2<Integer, Integer> value) {
             return value.f0 % 4 == 0;
         }
     }

@@ -1,8 +1,12 @@
 package io.thomas;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
@@ -63,22 +67,25 @@ public class WordCount {
         env.getConfig().setGlobalJobParameters(params);
 
         // get input data
-        DataStream<String> text;
+        DataStream<String> dataStream;
         if (params.has("input")) {
+            final FileSource<String> source =
+                    FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path(params.get("input"))).build();
+
             // read the text file from given input path
-            text = env.readTextFile(params.get("input"));
+            dataStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "file-source");
         } else {
             System.out.println("Executing WordCount example with default input data set.");
             System.out.println("Use --input to specify file input.");
             // get default test text data
-            text = env.fromElements(WORDS);
+            dataStream = env.fromElements(WORDS);
         }
 
         DataStream<Tuple2<String, Integer>> counts =
             // split up the lines in pairs (2-tuples) containing: (word,1)
-            text.flatMap(new Tokenizer())
+                dataStream.flatMap(new Tokenizer())
             // group by the tuple field "0" and sum up tuple field "1"
-            .keyBy(0).sum(1);
+            .keyBy(t -> t.f0).sum(1);
 
         // emit result
         if (params.has("output")) {
@@ -110,8 +117,8 @@ public class WordCount {
 
             // emit the pairs
             for (String token : tokens) {
-                if (token.length() > 0) {
-                    out.collect(new Tuple2<String, Integer>(token, 1));
+                if (!token.isEmpty()) {
+                    out.collect(new Tuple2<>(token, 1));
                 }
             }
         }

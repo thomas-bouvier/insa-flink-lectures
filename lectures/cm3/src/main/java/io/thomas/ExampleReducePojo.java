@@ -1,8 +1,15 @@
 package io.thomas;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.file.sink.FileSink;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -44,8 +51,11 @@ public class ExampleReducePojo {
         // get input data
         DataStream<String> dataStream;
         if (params.has("input")) {
+            final FileSource<String> source =
+                    FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path(params.get("input"))).build();
+
             // read the text file from given input path
-            dataStream = env.readTextFile(params.get("input"));
+            dataStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "file-source");
         } else {
             System.out.println("Use --input to specify file input.");
             // get default test text data
@@ -53,13 +63,13 @@ public class ExampleReducePojo {
         }
 
         DataStream<ContinentAvg> outputStream = dataStream.map(new ExtractPopulation())
-                                                          .keyBy("continent")
+                                                          .keyBy(c -> c.continent)
                                                           .reduce(new SumCountPopulation())
                                                           .map(new AvgPopulation());
 
         // emit result
         if (params.has("output")) {
-            outputStream.writeAsText(params.get("output"));
+            outputStream.sinkTo(FileSink.<ContinentAvg>forRowFormat(new Path(params.get("output")), new SimpleStringEncoder<>()).build());
         } else {
             System.out.println("Printing result to stdout. Use --output to specify output path.");
             outputStream.print();
@@ -76,7 +86,7 @@ public class ExampleReducePojo {
     
     public static class ExtractPopulation implements MapFunction<String, ContinentStats> {
         @Override
-        public ContinentStats map(String data) throws Exception {
+        public ContinentStats map(String data) {
             String[] fields = data.split(";");
             return new ContinentStats(
                     fields[0].trim(), /* continent */
@@ -88,7 +98,7 @@ public class ExampleReducePojo {
     public static class SumCountPopulation implements ReduceFunction<ContinentStats> {
         @Override
         public ContinentStats reduce(ContinentStats mycumulative,
-                                     ContinentStats input) throws Exception {
+                                     ContinentStats input) {
             return new ContinentStats(
                         input.continent,
                         mycumulative.population + input.population,
@@ -98,7 +108,7 @@ public class ExampleReducePojo {
     
     public static class AvgPopulation implements MapFunction<ContinentStats, ContinentAvg> {
         @Override
-        public ContinentAvg map(ContinentStats value) throws Exception {
+        public ContinentAvg map(ContinentStats value) {
             return new ContinentAvg(
                     value.continent,
                     value.population / value.count);

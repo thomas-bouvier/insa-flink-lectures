@@ -1,10 +1,16 @@
 package io.thomas;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.file.sink.FileSink;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
@@ -33,8 +39,11 @@ public class ExampleMap {
         // get input data
         DataStream<String> dataStream;
         if (params.has("input")) {
+            final FileSource<String> source =
+                    FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path(params.get("input"))).build();
+
             // read the text file from given input path
-            dataStream = env.readTextFile(params.get("input"));
+            dataStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "file-source");
         } else {
             System.out.println("Executing Map example with default input data set.");
             System.out.println("Use --input to specify file input.");
@@ -47,7 +56,7 @@ public class ExampleMap {
 
         // emit result
         if (params.has("output")) {
-            outputStream.writeAsText(params.get("output"));
+            outputStream.sinkTo(FileSink.<String>forRowFormat(new Path(params.get("output")), new SimpleStringEncoder<>()).build());
         } else {
             System.out.println("Printing result to stdout. Use --output to specify output path.");
             outputStream.print();
@@ -63,20 +72,18 @@ public class ExampleMap {
 
     public static class RemoveShortWords implements FilterFunction<String> {
         @Override
-        public boolean filter(String word) throws Exception {
+        public boolean filter(String word) {
             return word.length() > 3;
         }
     }
     
     public static class UpperWord implements MapFunction<String, String> {
         @Override
-        public String map(String word) throws Exception {
-            if(word.trim().length() > 5){
+        public String map(String word) {
+            if (word.trim().length() > 5) {
                 return word.toUpperCase();
-            } else {
-                return word;
             }
+            return word;
         }
     }
-
 }

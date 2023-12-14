@@ -1,8 +1,14 @@
 package io.thomas;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.file.sink.FileSink;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -41,8 +47,11 @@ public class ExampleNumAgg {
         // get input data
         DataStream<String> dataStream;
         if (params.has("input")) {
+            final FileSource<String> source =
+                    FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path(params.get("input"))).build();
+
             // read the text file from given input path
-            dataStream = env.readTextFile(params.get("input"));
+            dataStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "file-source");
         } else {
             System.out.println("Executing NumAgg example with default input data set.");
             System.out.println("Use --input to specify file input.");
@@ -51,12 +60,12 @@ public class ExampleNumAgg {
         }
 
         DataStream<Tuple2<String, Integer>> outputStream = dataStream.map(new ExtractPopulation())
-                                                                     .keyBy(0)
+                                                                     .keyBy(t -> t.f0)
                                                                      .min(1);
 
         // emit result
         if (params.has("output")) {
-            outputStream.writeAsText(params.get("output"));
+            outputStream.sinkTo(FileSink.<Tuple2<String, Integer>>forRowFormat(new Path(params.get("output")), new SimpleStringEncoder<>()).build());
         } else {
             System.out.println("Printing result to stdout. Use --output to specify output path.");
             outputStream.print();
@@ -73,9 +82,9 @@ public class ExampleNumAgg {
     
     public static class ExtractPopulation implements MapFunction<String, Tuple2<String, Integer>> {
         @Override
-        public Tuple2<String, Integer> map(String data) throws Exception {
+        public Tuple2<String, Integer> map(String data) {
             String[] fields = data.split(";");
-            return new Tuple2<String, Integer>(
+            return new Tuple2<>(
                     fields[0].trim(), /* continent */
                     Integer.parseInt(fields[1].split(",")[1].trim())); /* population */
         }

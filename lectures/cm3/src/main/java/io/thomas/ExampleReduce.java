@@ -1,10 +1,16 @@
 package io.thomas;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.file.sink.FileSink;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -43,8 +49,11 @@ public class ExampleReduce {
         // get input data
         DataStream<String> dataStream;
         if (params.has("input")) {
+            final FileSource<String> source =
+                    FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path(params.get("input"))).build();
+
             // read the text file from given input path
-            dataStream = env.readTextFile(params.get("input"));
+            dataStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "file-source");
         } else {
             System.out.println("Executing Reduce example with default input data set.");
             System.out.println("Use --input to specify file input.");
@@ -53,13 +62,13 @@ public class ExampleReduce {
         }
 
         DataStream<Tuple2<String, Double>> outputStream = dataStream.map(new ExtractPopulation())
-                                                                    .keyBy(0)
+                                                                    .keyBy(t -> t.f0)
                                                                     .reduce(new SumCountPopulation())
                                                                     .map(new AvgPopulation());
 
         // emit result
         if (params.has("output")) {
-            outputStream.writeAsText(params.get("output"));
+            outputStream.sinkTo(FileSink.<Tuple2<String, Double>>forRowFormat(new Path(params.get("output")), new SimpleStringEncoder<>()).build());
         } else {
             System.out.println("Printing result to stdout. Use --output to specify output path.");
             outputStream.print();
@@ -76,9 +85,9 @@ public class ExampleReduce {
     
     public static class ExtractPopulation implements MapFunction<String, Tuple3<String, Double, Integer>> {
         @Override
-        public Tuple3<String, Double, Integer> map(String data) throws Exception {
+        public Tuple3<String, Double, Integer> map(String data) {
             String[] fields = data.split(";");
-            return new Tuple3<String, Double, Integer>(
+            return new Tuple3<>(
                     fields[0].trim(), /* continent */
                     Double.parseDouble(fields[1].split(",")[1].trim()), /* population */
                     1 /* count */); 
@@ -89,8 +98,8 @@ public class ExampleReduce {
         @Override
         public Tuple3<String, Double, Integer> reduce(
                                 Tuple3<String, Double, Integer> mycumulative,
-                                Tuple3<String, Double, Integer> input) throws Exception {
-            return new Tuple3<String, Double, Integer>(
+                                Tuple3<String, Double, Integer> input) {
+            return new Tuple3<>(
                         input.f0, /* continent */
                         mycumulative.f1 + input.f1, /* population sum */
                         mycumulative.f2 + 1 /* count */
@@ -100,7 +109,7 @@ public class ExampleReduce {
     
     public static class AvgPopulation implements MapFunction<Tuple3<String, Double, Integer>, Tuple2<String, Double>> {
         @Override
-        public Tuple2<String, Double> map(Tuple3<String, Double, Integer> value) throws Exception {
+        public Tuple2<String, Double> map(Tuple3<String, Double, Integer> value) {
             return new Tuple2<>(
                     value.f0, /* continent */
                     value.f1 / value.f2 /* avg population = population sum / count */
