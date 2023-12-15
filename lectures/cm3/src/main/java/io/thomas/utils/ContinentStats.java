@@ -5,8 +5,6 @@ public class ContinentStats {
     public double population;
     public int count;
 
-    public ContinentStats() {}
-
     public ContinentStats(String continent, double population, int count) {
         this.continent = continent;
         this.population = population;

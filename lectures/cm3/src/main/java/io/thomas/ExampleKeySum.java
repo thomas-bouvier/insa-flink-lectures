@@ -25,7 +25,8 @@ public class ExampleKeySum {
             "North America;Canada, Cuba, US, Mexico",
             "South America;Argentina, Brazil, Chile, Venezuela, Uruguay",
             "Oceania;Australia, Fiji, New Zealand, Tonga",
-            "Africa;Angola, Egypt, Kenya, Morocco"
+            "Africa;Angola, Egypt, Kenya, Morocco",
+            "Europe;France, Germany"
     };
 
 
