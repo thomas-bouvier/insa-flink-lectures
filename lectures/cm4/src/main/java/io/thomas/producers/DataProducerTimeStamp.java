@@ -11,27 +11,22 @@ public class DataProducerTimeStamp
 {
     public static void main(String[] args) throws IOException
     {
-        ServerSocket listener = new ServerSocket(9090);
-        try{
-                Socket socket = listener.accept();
+        try (ServerSocket listener = new ServerSocket(9090)) {
+            Socket socket = listener.accept();
+            try (socket) {
                 System.out.println("Got new connection: " + socket.toString());
                 BufferedReader br = new BufferedReader(new FileReader("thermometers.txt"));
-                try {
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    String measurement;
-                    while ((measurement = br.readLine()) != null){
-                        measurement += "  "+System.currentTimeMillis();                        
-                        System.out.println(measurement);
-                        out.println(measurement);
-                           Thread.sleep(1000);
-                    }
-                } finally{
-                    socket.close();
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                String measurement;
+                while ((measurement = br.readLine()) != null) {
+                    measurement += "  " + System.currentTimeMillis();
+                    System.out.println(measurement);
+                    out.println(measurement);
+                    Thread.sleep(1000);
                 }
-        } catch(Exception e ){
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally{
-            listener.close();
         }
     }
 }

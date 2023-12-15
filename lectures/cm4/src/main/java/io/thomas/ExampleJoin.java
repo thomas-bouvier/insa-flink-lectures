@@ -5,7 +5,6 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
@@ -41,32 +40,6 @@ public class ExampleJoin {
                                                                               .window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
                                                                               .apply(new JoinData());
 
-        /*
-        DataStream<Tuple3<Integer, String, String>> joinedData = countriesStream.join(peopleStream)
-                                                                              .where(new KeySelector<Tuple2<Integer, String>, Integer>() {
-                                                                                @Override
-                                                                                public Integer getKey(Tuple2<Integer, String> country) throws Exception {
-                                                                                    System.out.println("country " + country.f0);
-                                                                                    return country.f0;
-                                                                                }
-                                                                            })
-                                                                              .equalTo(new KeySelector<Tuple2<Integer, String>, Integer>() {
-                                                                                @Override
-                                                                                public Integer getKey(Tuple2<Integer, String> person) throws Exception {
-                                                                                    System.out.println("person " + person.f0);
-                                                                                    return person.f0;
-                                                                                }
-                                                                            })
-                                                                              .window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-                                                                              .apply(new JoinFunction<Tuple2<Integer, String>, Tuple2<Integer, String>, Tuple3<Integer, String, String>>() {
-                                                                                @Override
-                                                                                public Tuple3<Integer, String, String> join(Tuple2<Integer, String> countries, Tuple2<Integer, String> person) throws Exception {
-                                                                                    System.out.println(countries.f0 + " " + person.f1 + " " + countries.f1);
-                                                                                    return new Tuple3<>(countries.f0, person.f1, countries.f1);
-                                                                                }
-                                                                            });
-        */
-
         // emit result
         if (params.has("output")) {
             joinedData.writeAsText(params.get("output"));
@@ -85,8 +58,8 @@ public class ExampleJoin {
 
     public static class FormatDataCountry implements MapFunction<String, Tuple2<Integer, String>> {
         @Override
-        public Tuple2<Integer, String> map(String data) throws Exception {
-            return new Tuple2<Integer, String>(
+        public Tuple2<Integer, String> map(String data) {
+            return new Tuple2<>(
                         Integer.parseInt(data.split(",")[0]),
                         data.split(",")[1].trim());
         }
@@ -95,7 +68,7 @@ public class ExampleJoin {
     public static class FormatDataPeople implements MapFunction<String, Tuple2<Integer, String>> {
         @Override
         public Tuple2<Integer, String> map(String data) throws Exception {
-            return new Tuple2<Integer, String>(
+            return new Tuple2<>(
                         Integer.parseInt(data.split(",")[2].trim()),
                         data.split(",")[1].trim());
         }
@@ -103,8 +76,7 @@ public class ExampleJoin {
     
     public static class JoinData implements JoinFunction<Tuple2<Integer, String>, Tuple2<Integer, String>, Tuple3<Integer, String, String>> {
         @Override
-        public Tuple3<Integer, String, String> join(Tuple2<Integer, String> countries, Tuple2<Integer, String> person) throws Exception {
-            System.out.println(countries.f0 + " " + person.f1 + " " + countries.f1);
+        public Tuple3<Integer, String, String> join(Tuple2<Integer, String> countries, Tuple2<Integer, String> person) {
             return new Tuple3<>(countries.f0, person.f1, countries.f1);
         }
     }

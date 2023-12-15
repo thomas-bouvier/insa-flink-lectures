@@ -78,7 +78,7 @@ public class WordCount {
             // split up the lines in pairs (2-tuples) containing: (word,1)
             text.flatMap(new Tokenizer())
             // group by the tuple field "0" and sum up tuple field "1"
-            .keyBy(0).sum(1);
+            .keyBy(t -> t.f0).sum(1);
 
         // emit result
         if (params.has("output")) {
@@ -111,7 +111,7 @@ public class WordCount {
             // emit the pairs
             for (String token : tokens) {
                 if (token.length() > 0) {
-                    out.collect(new Tuple2<String, Integer>(token, 1));
+                    out.collect(new Tuple2<>(token, 1));
                 }
             }
         }
