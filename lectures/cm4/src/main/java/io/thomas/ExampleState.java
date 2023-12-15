@@ -104,14 +104,18 @@ public class ExampleState {
         @Override
         public void open(Configuration conf)
         {
-            ValueStateDescriptor<Map<Integer, Double>> descriptor = new ValueStateDescriptor<>("allMeasurements", HashMap.class);
+            ValueStateDescriptor<Map<Integer, Double>> descriptor = new ValueStateDescriptor<>(
+                    "allMeasurements",
+                    TypeInformation.of(new TypeHint<>() {
+                     })
+            );
             allMeasurements = getRuntimeContext().getState(descriptor);
             
-            ValueStateDescriptor<Long> descriptor2 = 
-                    new ValueStateDescriptor<>(
-                            "count",
-                            TypeInformation.of(new TypeHint<Long>(){}), 
-                            0L);
+            ValueStateDescriptor<Long> descriptor2 = new ValueStateDescriptor<>(
+                    "count",
+                    TypeInformation.of(new TypeHint<>() {
+                    })
+            );
             count = getRuntimeContext().getState(descriptor2);
         }
     }

@@ -2,8 +2,10 @@ package io.thomas;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.file.sink.FileSink;
 import org.apache.flink.connector.file.src.FileSource;
 import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
 import org.apache.flink.core.fs.Path;
@@ -89,7 +91,7 @@ public class WordCount {
 
         // emit result
         if (params.has("output")) {
-            counts.writeAsText(params.get("output"));
+            counts.sinkTo(FileSink.<Tuple2<String, Integer>>forRowFormat(new Path(params.get("output")), new SimpleStringEncoder<>()).build());
         } else {
             System.out.println("Printing result to stdout. Use --output to specify output path.");
             counts.print();

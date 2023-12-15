@@ -1,10 +1,16 @@
 package io.thomas;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.file.sink.FileSink;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
@@ -27,9 +33,13 @@ public class ExampleJoin {
         env.getConfig().setGlobalJobParameters(params);
 
         // get input data
-        DataStream<String> stream1 = env.readTextFile(params.get("input1"));
-        DataStream<String> stream2 = env.readTextFile(params.get("input2"));
-        
+        final FileSource<String> source1 =
+                FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path(params.get("input1"))).build();
+        final FileSource<String> source2 =
+                FileSource.forRecordStreamFormat(new TextLineInputFormat(), new Path(params.get("input2"))).build();
+
+        DataStream<String> stream1 = env.fromSource(source1, WatermarkStrategy.noWatermarks(), "file-source-1");
+        DataStream<String> stream2 = env.fromSource(source2, WatermarkStrategy.noWatermarks(), "file-source-2");
         
         DataStream<Tuple2<Integer, String>> countriesStream = stream1.map(new FormatDataCountry());
         DataStream<Tuple2<Integer, String>> peopleStream = stream2.map(new FormatDataPeople());
@@ -42,7 +52,7 @@ public class ExampleJoin {
 
         // emit result
         if (params.has("output")) {
-            joinedData.writeAsText(params.get("output"));
+            joinedData.sinkTo(FileSink.<Tuple3<Integer, String, String>>forRowFormat(new Path(params.get("output")), new SimpleStringEncoder<>()).build());
         } else {
             System.out.println("Printing result to stdout. Use --output to specify output path.");
             joinedData.print();
