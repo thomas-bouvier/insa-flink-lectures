@@ -43,7 +43,7 @@ public class ExampleGlobal {
     
     public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
         @Override
-        public Tuple2<Integer, Double> map(String value) throws Exception {
+        public Tuple2<Integer, Double> map(String value) {
             return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
                              Double.parseDouble(value.split(" ")[2].trim()));
         }

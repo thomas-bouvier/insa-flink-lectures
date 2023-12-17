@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 /**
  * mvn install exec:java -Dmain.class="io.thomas.producers.DataProducer" -q
  * or nc -lk 9090
- * mvn install exec:java -Dmain.class="io.thomas.ExampleSliding" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleSlidingProcessingTime" -q
  */
 public class ExampleSlidingProcessingTime {
     
@@ -21,16 +21,11 @@ public class ExampleSlidingProcessingTime {
 
         DataStream<String> dataStream = env.socketTextStream("localhost", 9090);
         
-//        DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-//                                                                     .windowAll(SlidingProcessingTimeWindows.of(Time.seconds(5),
-//                                                                                                                 Time.seconds(3)))
-//                                                                     .reduce(new SumTemperature());
-        
         DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-                                                                     .keyBy(t -> t.f0)
-                                                                     .window(SlidingProcessingTimeWindows.of(Time.seconds(5),
-                                                                                                              Time.seconds(3)))
+                                                                     .windowAll(SlidingProcessingTimeWindows.of(Time.seconds(5),
+                                                                                                                 Time.seconds(3)))
                                                                      .reduce(new SumTemperature());
+
 
         // emit result
         outputStream.print();
@@ -44,7 +39,7 @@ public class ExampleSlidingProcessingTime {
     
     public static class FormatData implements MapFunction<String, Tuple2<Integer, Double>> {
         @Override
-        public Tuple2<Integer, Double> map(String value) throws Exception {
+        public Tuple2<Integer, Double> map(String value) {
             return Tuple2.of(Integer.parseInt(value.split(" ")[0].trim()), 
                              Double.parseDouble(value.split(" ")[2].trim()));
         }

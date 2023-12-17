@@ -77,7 +77,7 @@ public class ExampleJoin {
     
     public static class FormatDataPeople implements MapFunction<String, Tuple2<Integer, String>> {
         @Override
-        public Tuple2<Integer, String> map(String data) throws Exception {
+        public Tuple2<Integer, String> map(String data) {
             return new Tuple2<>(
                         Integer.parseInt(data.split(",")[2].trim()),
                         data.split(",")[1].trim());

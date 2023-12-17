@@ -24,16 +24,11 @@ public class ExampleTumblingProcessingTime {
         DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
                                                                      .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(3)))
                                                                      .reduce(new SumTemperature());
-        
-//        DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-//                                                                     .keyBy(0)
-//                                                                     .window(TumblingProcessingTimeWindows.of(Time.seconds(3)))
-//                                                                     .reduce(new SumTemperature());
 
         // emit result
         outputStream.print();
         // execute program
-        env.execute("Streaming ExampleTumbling");
+        env.execute("Streaming ExampleTumblingProcessingTime");
     }
 
     // *************************************************************************

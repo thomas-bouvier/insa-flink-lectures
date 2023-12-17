@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
  * mvn install exec:java -Dmain.class="io.thomas.producers.DataProducerInactivity" -q
- * mvn install exec:java -Dmain.class="io.thomas.ExampleSession" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleSessionProcessingTime" -q
  */
 public class ExampleSessionProcessingTime {
     
@@ -20,14 +20,9 @@ public class ExampleSessionProcessingTime {
 
         DataStream<String> dataStream = env.socketTextStream("localhost", 9090);
         
-//        DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-//                                                                     .windowAll(ProcessingTimeSessionWindows.withGap(Time.seconds(2)))
-//                                                                     .reduce(new SumTemperature());
-        
         DataStream<Tuple2<Integer, Double>> outputStream = dataStream.map(new FormatData())
-                                                                     .keyBy(t -> t.f0)
-                                                                     .window(ProcessingTimeSessionWindows.withGap(Time.seconds(2)))
-                                                                     .sum(1);
+                                                                     .windowAll(ProcessingTimeSessionWindows.withGap(Time.seconds(2)))
+                                                                     .reduce(new SumTemperature());
 
         // emit result
         outputStream.print();
