@@ -2,7 +2,7 @@
 
 # Set up the environment
 
-Flink runs on all UNIX-like environments, i.e. Linux, Mac OS X, and Cygwin (for Windows). You need to have Java 11 installed. To check the Java version installed, type in your terminal:
+Flink runs on all UNIX-like environments, i.e. Linux, Mac OS X, and Cygwin (for Windows). You need to have Java 17 installed. To check the Java version installed, type in your terminal:
 
 ```
 java -version
@@ -17,11 +17,11 @@ mvn -v
 The result should look similar to:
 
 ```
-Apache Maven 3.8.4 (Red Hat 3.8.4-3)
-Maven home: /usr/share/maven
-Java version: 11.0.8, vendor: N/A, runtime: /home/tbouvier/.sdkman/candidates/java/11.0.8-open
+Apache Maven 3.9.6 (bc0240f3c744dd6b6ec2920b3cd08dcc295161ae)
+Maven home: /home/tbouvier/.sdkman/candidates/maven/current
+Java version: 17.0.9, vendor: Eclipse Adoptium, runtime: /home/tbouvier/.sdkman/candidates/java/17.0.9-tem
 Default locale: en_GB, platform encoding: UTF-8
-OS name: "linux", version: "6.0.16-200.fc36.x86_64", arch: "amd64", family: "unix"
+OS name: "linux", version: "6.6.7-100.fc38.x86_64", arch: "amd64", family: "unix"
 ```
 
 If you get any issue, [SDKMAN](https://sdkman.io/usage) is useful to manage your environment.
@@ -29,7 +29,8 @@ If you get any issue, [SDKMAN](https://sdkman.io/usage) is useful to manage your
 ```
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 11.0.8-open
+
+sdk install java 17.0.9-tem
 sdk install maven
 ```
 
@@ -59,6 +60,17 @@ mvn install exec:java -Dmain.class="io.thomas.ExampleJoin" -Dexec.args="--input1
 
 Please use absolute paths for input files.
 
+# Data producers
+
+Windowing example require some data to be produced.
+
+```
+cd lectures/cm4
+mvn install exec:java -Dmain.class="io.thomas.producers.DataProducer" -q
+```
+
+Run your example afterwards.
+
 # Misc
 
 To write text data on a socket, which may be ingested by Flink:
@@ -71,13 +83,4 @@ Check whether socket 9090 is open:
 
 ```
 lsof -i -P -n | grep 9090
-```
-
-Flink related commands, formerly used by Daniel:
-
-```
-/home/student/tp/flink-1.9.0/bin/start-cluster.sh
-/home/student/tp/flink-1.9.0/bin/flink run /home/student/tp/eclipse-workspace/wc/target/wc-0.0.1-SNAPSHOT.jar --input file:///home/student/wc-in.txt --output file:///home/student/wc-out.txt
-/home/student/tp/flink-1.9.0/bin/flink run -c cm3.WordCountFilter /home/student/tp/eclipse-workspace/wc/target/wc-0.0.1-SNAPSHOT.jar --input file:///home/student/word-stream.txt --output file:///home/student/wc-out-filter.txt
-/home/student/tp/flink-1.9.0/bin/stop-cluster.sh
 ```

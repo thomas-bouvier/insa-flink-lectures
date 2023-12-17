@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 /**
  * mvn install exec:java -Dmain.class="io.thomas.producers.DataProducer" -q
    or nc -lk 9090
- * mvn install exec:java -Dmain.class="io.thomas.ExampleTumbling" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleTumblingProcessingTime" -q
  */
 public class ExampleTumblingProcessingTime {
     
