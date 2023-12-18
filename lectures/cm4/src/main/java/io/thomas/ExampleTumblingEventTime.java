@@ -44,7 +44,6 @@ public class ExampleTumblingEventTime {
     public static class FormatData implements MapFunction<String, Tuple3<Integer, Double, Long>> {
         @Override
         public Tuple3<Integer, Double, Long> map(String value) {
-            System.out.println(Long.parseLong(value.split(" ")[3].trim()));
             return Tuple3.of(Integer.parseInt(value.split(" ")[0].trim()),
                              Double.parseDouble(value.split(" ")[2].trim()),
                              Long.parseLong(value.split(" ")[3].trim()));

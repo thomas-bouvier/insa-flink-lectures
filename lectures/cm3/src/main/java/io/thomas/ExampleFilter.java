@@ -16,7 +16,7 @@ import org.apache.flink.util.Collector;
 
 /**
  * mvn install exec:java -Dmain.class="io.thomas.ExampleFilter" -q
- * mvn install exec:java -Dmain.class="io.thomas.ExampleFilter" -Dexec.args="--input word-stream.txt" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleFilter" -Dexec.args="--input datasets/word-stream.txt" -q
  */
 public class ExampleFilter {
     

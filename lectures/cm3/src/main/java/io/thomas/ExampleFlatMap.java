@@ -15,7 +15,7 @@ import org.apache.flink.util.Collector;
 
 /**
  * mvn install exec:java -Dmain.class="io.thomas.ExampleFlatMap" -q
- * mvn install exec:java -Dmain.class="io.thomas.ExampleFlatMap" -Dexec.args="--input countries-stream.txt" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleFlatMap" -Dexec.args="--input datasets/countries-stream.txt" -q
  */
 public class ExampleFlatMap {
 

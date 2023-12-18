@@ -96,7 +96,7 @@ public class ExampleKafka {
                 .setRecordSerializer(new MyRecordSerializationSchema(outputTopic))
                 .build();
         stats.sinkTo(sink);
-
+ 
         // execute program
         env.execute("Streaming ExampleKafka");
     }

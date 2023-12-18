@@ -2,6 +2,8 @@
 
 # Set up the environment
 
+Exemples are intended to be run with Flink >=1.18
+
 Flink runs on all UNIX-like environments, i.e. Linux, Mac OS X, and Cygwin (for Windows). You need to have Java 17 installed. To check the Java version installed, type in your terminal:
 
 ```
@@ -32,6 +34,7 @@ source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 sdk install java 17.0.9-tem
 sdk install maven
+sdk install flink
 ```
 
 # Execute an example
@@ -55,7 +58,7 @@ mvn install exec:java -Dmain.class="io.thomas.WordCount" -q
 If the example you want to run requires input parameters:
 
 ```
-mvn install exec:java -Dmain.class="io.thomas.ExampleJoin" -Dexec.args="--input1 country-ids-stream.txt --input2 people-ids-stream.txt" -q
+mvn install exec:java -Dmain.class="io.thomas.ExampleTumblingJoin" -Dexec.args="--input1 country-ids-stream.txt --input2 people-ids-stream.txt" -q
 ```
 
 Please use absolute paths for input files.

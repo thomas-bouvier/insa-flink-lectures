@@ -13,13 +13,14 @@ import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
- * mvn install exec:java -Dmain.class="io.thomas.ExampleJoin" -Dexec.args="--input1 country-ids-stream.txt --input2 people-ids-stream.txt" -q
+ * mvn install exec:java -Dmain.class="io.thomas.ExampleTumblingJoin" -Dexec.args="--input1 datasets/country-ids-stream.txt --input2 datasets/people-ids-stream.txt" -q
  */
-public class ExampleJoin {
+public class ExampleTumblingJoin {
 
     public static void main(String[] args) throws Exception {
 
@@ -47,7 +48,9 @@ public class ExampleJoin {
         DataStream<Tuple3<Integer, String, String>> joinedData = countriesStream.join(peopleStream)
                                                                               .where(t -> t.f0)
                                                                               .equalTo(t -> t.f0)
-                                                                              .window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                                                                              .window(SlidingProcessingTimeWindows.of(
+                                                                                      Time.seconds(1), Time.seconds(2))
+                                                                              )
                                                                               .apply(new JoinData());
 
         // emit result
@@ -59,7 +62,7 @@ public class ExampleJoin {
         }
 
         // execute program
-        env.execute("Streaming ExampleJoin");
+        env.execute("Streaming ExampleTumblingJoin");
     }
 
     // *************************************************************************
