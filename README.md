@@ -2,9 +2,9 @@
 
 # Set up the environment
 
-Exemples are intended to be run with Flink >=1.18
+Exemples are intended to be run with Flink >=1.18.
 
-Flink runs on all UNIX-like environments, i.e. Linux, Mac OS X, and Cygwin (for Windows). You need to have Java 17 installed. To check the Java version installed, type in your terminal:
+Flink runs on all UNIX-like environments, i.e. Linux, macOS, and Cygwin (for Windows). You need to have Java 17 installed. To check the Java version installed, type in your terminal:
 
 ```
 java -version

@@ -33,14 +33,15 @@ public class ExampleState {
 
         // starts a checkpoint every 2 seconds
         env.enableCheckpointing(2000);
-        // set checkpoint storage
-        env.getCheckpointConfig().setCheckpointStorage("file:///home/tbouvier/example-state-store");
         // sets the minimal pause between checkpointing attempts to 10 seconds
         env.getCheckpointConfig().setMinPauseBetweenCheckpoints(10000);
         // sets the maximum number of checkpoint attempts that may be in progress at the same time to one
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
         // sets the checkpointing mode
         env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
+
+        // set checkpoint storage
+        env.getCheckpointConfig().setCheckpointStorage("file:///home/tbouvier/example-state-store");
 
         env.setStateBackend(new HashMapStateBackend());
         env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
@@ -114,7 +115,6 @@ public class ExampleState {
                     "measurements",
                     TypeInformation.of(new TypeHint<>() {}),
                     TypeInformation.of(new TypeHint<>() {})
-
             );
             measurements = getRuntimeContext().getMapState(descriptor);
             
