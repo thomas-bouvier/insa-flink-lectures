@@ -41,7 +41,7 @@ public class ExampleTumblingJoin {
                                                                               .where(t -> t.f0)
                                                                               .equalTo(t -> t.f0)
                                                                               .window(SlidingProcessingTimeWindows.of(
-                                                                                      Time.seconds(3), Time.seconds(1))
+                                                                                      Time.seconds(1), Time.seconds(2))
                                                                               )
                                                                               .apply(new JoinData());
 
